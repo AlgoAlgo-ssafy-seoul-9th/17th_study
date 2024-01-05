@@ -134,7 +134,31 @@ if __name__ == "__main__":
 ### [성구](./Z/성구.py)
 
 ```py
+# 1074 Z
+import sys
+sys.setrecursionlimit(10**6)
+input = sys.stdin.readline
 
+def z(n:int, r:int, c:int) -> int:
+    if n == 1:
+        return 0
+    half = n // 2
+    seq = 0
+    if r >= half:
+        seq += 2
+        r -= half
+
+    if c >= half:
+        seq += 1
+        c -= half
+    
+
+    return seq * half * half + z(half, r, c)
+
+if __name__ == "__main__":
+    N, r, c = map(int, input().split())
+    cnt = z(2**N, r, c)
+    print(cnt)
 ```
 
 </div>
