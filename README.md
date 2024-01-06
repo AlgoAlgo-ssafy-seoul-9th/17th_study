@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
 # 이번주 문제
 
-<details>
+<details open>
 <summary>접기/펼치기</summary>
 <div markdown="1">
 
