@@ -178,8 +178,45 @@ if __name__ == "__main__":
 ### [민웅](<./네트워크 연결/민웅.py>)
 
 ```py
+# 1922_네트워크연결_network-connecting
+import sys
+input = sys.stdin.readline
+# 4 2 6 3 8
+
+def findset(node):
+    while parent[node] != node:
+        node = parent[node]
+    return node
 
 
+def union(x, y):
+    parent[findset(y)] = findset(x)
+
+
+N = int(input().strip())
+M = int(input().strip())
+
+graph = []
+parent = [i for i in range(N+1)]
+for _ in range(M):
+    s, g, w = map(int, input().split())
+    graph.append([s, g, w])
+
+graph.sort(key=lambda x: x[2])
+
+cost = 0
+cnt = 0
+for g in graph:
+    u, v, w = g
+    if findset(u) != findset(v):
+        cnt += 1
+        cost += w
+        union(u, v)
+        if cnt == N:
+            break
+
+# print(parent)
+print(cost)
 ```
 
 ### [상미](<./네트워크 연결/상미.py>)
@@ -262,6 +299,62 @@ if __name__ == "__main__":
     print(ans)
 ```
 
-
 </div>
+</details>
+<br><br>
+
+# 알고리즘 설명
+
+<details>
+<summary>접기/펼치기</summary>
+
+## 용어 정리
+
+### Spanning Tree (신장 트리)
+- **정의**: 주어진 그래프의 모든 정점을 포함하면서 사이클이 없는 부분 그래프.
+- **중요성**: 신장 트리를 통해 그래프의 구조를 단순화시키고, 필요한 정보만을 추출하기 위함
+- **속성**:
+  - 원래 그래프의 모든 정점을 포함해야한다.
+  - 정확히 (정점 수 - 1)개의 간선을 가져야한다.
+  - 사이클을 형성하지 않는다.
+
+### Minimum Spanning Tree (최소 신장 트리)
+![MST](./images/mst.png)
+
+- **정의**: 가능한 신장 트리(Spanning Tree) 중에서 간선의 가중치 합이 최소인 신장 트리.
+- **중요성**: 최소 비용 문제를 해결하는 데 사용되며, 네트워크 설계, 도로 건설, 전력망 구축 등 다양한 분야에서 응용가능
+- **대표알고리즘 예**: [Kruskal 알고리즘](#Kruskar-알고리즘), [Prim 알고리즘](#prim-알고리즘).
+- **속성**:
+  - 모든 정점을 포함하면서 최소한의 비용으로 연결합니다.
+  - 가중치가 가장 낮은 간선부터 선택하여 구성한다.(그리디 방법).
+
+
+## 대표 알고리즘
+
+### Kruskal 알고리즘
+- **탐색 방법**: 가장 가벼운 가중치의 간선부터 선택하여 MST를 찾는 알고리즘.
+- **구현 방법**
+    1. 간선 정렬 및 정점 초기화
+    2. 간선 선택 후 정점 병합
+    3. n-1개의 간선이 선택될 때까지(모든 정점이 선택될 때까지) 2번단계 반복
+
+```py
+# 구현
+
+
+#
+
+
+```
+
+
+
+### Prim 알고리즘
+- **탐색 방법**: 시작 정점에서부터 점차 그래프를 확장해 나가며 MST를 찾는 알고리즘.
+- **구현 방법**
+    1. 임의의 시작정점 선택 후 간선그룹 생성
+    2. 간선 선택 - MST 집합에 속한 정점과 속하지 않은 정점을 연결하는 정점중 최소가중치 간선을 선택함.
+    3. 정점 추가 및 2번 과정 반복
+
+
 </details>
