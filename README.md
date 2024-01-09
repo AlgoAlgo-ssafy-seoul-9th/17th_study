@@ -322,7 +322,7 @@ if __name__ == "__main__":
 ![MST](./images/mst.png)
 
 - **정의**: 가능한 신장 트리(Spanning Tree) 중에서 간선의 가중치 합이 최소인 신장 트리.
-- **중요성**: 최소 비용 문제를 해결하는 데 사용되며, 네트워크 설계, 도로 건설, 전력망 구축 등 다양한 분야에서 응용가능
+- **중요성**: 최소 비용 문제를 해결하는 데 사용되며 주로 **네트워크 설계**, **도로 건설**, **전력망 구축** 등 다양한 분야에서 응용가능
 - **대표알고리즘 예**: [Kruskal 알고리즘](#Kruskar-알고리즘), [Prim 알고리즘](#prim-알고리즘).
 - **속성**:
   - 모든 정점을 포함하면서 최소한의 비용으로 연결합니다.
@@ -341,9 +341,43 @@ if __name__ == "__main__":
 ```py
 # 구현
 
+# 주어진 노드의 루트노드 반환
+# 부모노드를 찾아가며, 루트노드(자기 자신을 가리키고있는 노드)를 찾음
+def findset(node):
+    while parent[node] != node:
+        node = parent[node]
+    return node
 
-#
+# x, y 노드를 같은 그룹으로 병합
+def union(x, y):
+    parent[findset(y)] = findset(x)
 
+def kruskal(graph, V):
+    # 그래프의 간선을 가중치에 따라 오름차순으로 정렬
+    graph.sort(key=lambda x: x[2])
+
+    # 각 정점에 대한 부모 초기화
+    parent = [i for i in range(V+1)]
+
+    mst = []
+    total_cost = 0
+
+    for edge in graph:
+        u, v, weight = edge
+        # 사이클이 형성되지 않는 경우에만 간선 선택
+        if findset(u) != findset(v):
+            union(u, v)
+            mst.append(edge)
+            total_cost += weight
+
+    return mst, total_cost
+
+graph = []
+for _ in range(M):
+    s, g, w = map(int, input().split())
+    graph.append([s, g, w])
+
+kruskal(graph, V)
 
 ```
 
@@ -352,9 +386,64 @@ if __name__ == "__main__":
 ### Prim 알고리즘
 - **탐색 방법**: 시작 정점에서부터 점차 그래프를 확장해 나가며 MST를 찾는 알고리즘.
 - **구현 방법**
-    1. 임의의 시작정점 선택 후 간선그룹 생성
-    2. 간선 선택 - MST 집합에 속한 정점과 속하지 않은 정점을 연결하는 정점중 최소가중치 간선을 선택함.
-    3. 정점 추가 및 2번 과정 반복
+    1. 임의의 시작정점 선택 후 간선그룹 생성(heapq)
+    2. 간선 선택 - MST 집합에 속한 정점과 속하지 않은 정점을 연결하는 간선 중 최소가중치 간선을 선택함.
+    3. 추가된 정점에 연결된 새로운 간선 추가 및 2번 과정 반복
+    4. 큐가 비거나 모든정점이 MST에 포함되면 종료
+
+```py
+# 구현
+import heapq
+
+def prim(graph, start, V):
+    visited = [0] * (V+1)
+    min_heap = [(0, start)]  # (가중치, 정점)
+    total_cost = 0
+
+    while min_heap:
+        weight, u = heapq.heappop(min_heap)
+        if not visited[u]:
+            visited[u] = 1
+            total_cost += weight
+            for v, w in graph[u]:
+                if not visited[v]:
+                    heapq.heappush(min_heap, (w, v))
+
+    return total_cost
+
+graph = [[] for _ in range(V+1)]
+# 그래프에 정점 별 간선정보 (u, v, w) 추가
+cost = prim(graph, 1, V)
+
+```
+
+## Kruskal vs Prim (https://8iggy.tistory.com/160)
+- 희소 그래프: 정점들 사이에 간선이 상대적으로 적게 존재하는 그래프. 예를 들어, 정점의 수에 비해 간선의 수가 훨씬 적은 경우.
+
+- 밀집 그래프: 정점들 사이에 많은 수의 간선이 존재하는 그래프. 거의 모든 정점 쌍 사이에 간선이 존재하는 경우.
+
+### Kruskal
+-> 간선의 수가 적은 희소 그래프에 적합. 연결 요소 파악에 유용.
+
+장점:
+- 구현이 간단하고 메모리 사용이 효율적.
+- 간선의 수가 적을수록 더 효과적.
+
+단점:
+- 간선의 수가 많은 밀집 그래프에서는 비효율적.
+- 모든 간선을 정렬해야 하므로 초기에 시간이 소요됨.
+
+
+### Prim
+-> 간선의 수가 많은 밀집 그래프에 적합. 작은 그래프에서 빠른 성능.
+
+장점:
+- 밀집 그래프에서 효율적.
+- 최소 힙을 사용하여 동적으로 간선 선택 가능.
+
+단점:
+- 메모리 사용량이 더 많음.
+- 정점의 수가 많을수록 성능 저하 가능성 있음.
 
 
 </details>
