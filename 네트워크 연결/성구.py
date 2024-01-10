@@ -1,4 +1,4 @@
-# 1922 네트워크 연결
+# 1922 네트워크 연결 - Kruskal
 import sys
 input = sys.stdin.readline
 
