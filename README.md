@@ -122,6 +122,33 @@ if __name__ == "__main__":
 ### [상미](./Z/상미.py)
 
 ```py
+## 백준 1074_ Z
+
+import sys
+input = sys.stdin.readline
+
+def solve(n, r, c):
+    if n == 0:
+        return 0
+
+    half = 2 ** (n-1)
+    quad = 0
+
+    if r >= half:
+        quad += 2   # 행은 다음 행으로 갈 때 사분할 2번 지나감
+        r -= half
+
+    if c >= half:
+        quad += 1
+        c -= half   # 열은 다음 열로 갈 때 사분할 1번 지나감
+
+    return quad * half * half + solve(n-1, r, c)
+
+
+N, r, c = map(int, input().split())
+result = solve(N, r, c)
+print(result)
+
 
 ```
 
@@ -151,7 +178,7 @@ def z(n:int, r:int, c:int) -> int:
     if c >= half:
         seq += 1
         c -= half
-    
+
 
     return seq * half * half + z(half, r, c)
 
@@ -165,7 +192,6 @@ if __name__ == "__main__":
 </details>
 
 </br></br></br>
-
 
 # 이번주 문제
 
@@ -222,7 +248,36 @@ print(cost)
 ### [상미](<./네트워크 연결/상미.py>)
 
 ```py
+## 백준 1922 _ 네트워크 연결
+## 답 안 나옴
 
+import sys
+input = sys.stdin.readline
+
+N = int(input())
+M = int(input())
+arr = [[0] * (N+1) for _ in range(N+1)]
+for _ in range(M):
+    a, b, c = map(int, input().split())
+    arr[a][b] = c
+    arr[b][a] = c
+visited = [0] * (N+1)
+minC = 100000000
+
+def sol(arr, tmp, cost):
+    visited[tmp] = 1    # 방문 처리
+    if visited == [1] * (N+1):  # 모두 다 방문했으면
+        if minC > cost:
+            minC = cost
+        return
+    for i in range(N+1):    # 연결되어 있고 방문 안 한 곳이라면
+        if arr[tmp][i] and not visited[i]:
+            sol(arr, i, cost + arr[tmp][i]) # 방문
+        else:
+            return
+
+print(sol(arr, 1, 0))
+print(minC)
 ```
 
 ### [병국](<./네트워크 연결/병국.py>)
@@ -248,7 +303,7 @@ def find(num:int) -> int:
     while parent[tmp] != tmp:
         tmp = parent[tmp]
         parent[num] = tmp
-        
+
     return parent[num]
     # 재귀
     # if parent[num] == num:
@@ -271,7 +326,7 @@ def kruskal():
     # Kruskal 알고리즘 == 최소 신장트리
     node = []      # 지나온 노드 저장용
     cost = 0       # 비용 저장
-    for i in range(M):        
+    for i in range(M):
         c, a, b = network[i]        # 비용이 가장 적은 노드부터 가져옴
         if find(a) == find(b):      # 순환되면 패스
             continue
@@ -279,7 +334,7 @@ def kruskal():
         union(a, b)                 # 지나갈 수 있다 == 이어져있다
         cost += c                   # 비용 저장
         if len(node) == N-1:        # 모든 노드 다 탐색했으면 비용 return -> 최소 비용임
-            return cost            
+            return cost
     return cost
 
 
@@ -311,6 +366,7 @@ if __name__ == "__main__":
 ## 용어 정리
 
 ### Spanning Tree (신장 트리)
+
 - **정의**: 주어진 그래프의 모든 정점을 포함하면서 사이클이 없는 부분 그래프.
 - **중요성**: 신장 트리를 통해 그래프의 구조를 단순화시키고, 필요한 정보만을 추출하기 위함
 - **속성**:
@@ -319,6 +375,7 @@ if __name__ == "__main__":
   - 사이클을 형성하지 않는다.
 
 ### Minimum Spanning Tree (최소 신장 트리)
+
 ![MST](./images/mst.png)
 
 - **정의**: 가능한 신장 트리(Spanning Tree) 중에서 간선의 가중치 합이 최소인 신장 트리.
@@ -328,15 +385,15 @@ if __name__ == "__main__":
   - 모든 정점을 포함하면서 최소한의 비용으로 연결합니다.
   - 가중치가 가장 낮은 간선부터 선택하여 구성한다.(그리디 방법).
 
-
 ## 대표 알고리즘
 
 ### Kruskal 알고리즘
+
 - **탐색 방법**: 가장 가벼운 가중치의 간선부터 선택하여 MST를 찾는 알고리즘.
 - **구현 방법**
-    1. 간선 정렬 및 정점 초기화
-    2. 간선 선택 후 정점 병합
-    3. n-1개의 간선이 선택될 때까지(모든 정점이 선택될 때까지) 2번단계 반복
+  1. 간선 정렬 및 정점 초기화
+  2. 간선 선택 후 정점 병합
+  3. n-1개의 간선이 선택될 때까지(모든 정점이 선택될 때까지) 2번단계 반복
 
 ```py
 # 구현
@@ -381,15 +438,14 @@ kruskal(graph, V)
 
 ```
 
-
-
 ### Prim 알고리즘
+
 - **탐색 방법**: 시작 정점에서부터 점차 그래프를 확장해 나가며 MST를 찾는 알고리즘.
 - **구현 방법**
-    1. 임의의 시작정점 선택 후 간선그룹 생성(heapq)
-    2. 간선 선택 - MST 집합에 속한 정점과 속하지 않은 정점을 연결하는 간선 중 최소가중치 간선을 선택함.
-    3. 추가된 정점에 연결된 새로운 간선 추가 및 2번 과정 반복
-    4. 큐가 비거나 모든정점이 MST에 포함되면 종료
+  1. 임의의 시작정점 선택 후 간선그룹 생성(heapq)
+  2. 간선 선택 - MST 집합에 속한 정점과 속하지 않은 정점을 연결하는 간선 중 최소가중치 간선을 선택함.
+  3. 추가된 정점에 연결된 새로운 간선 추가 및 2번 과정 반복
+  4. 큐가 비거나 모든정점이 MST에 포함되면 종료
 
 ```py
 # 구현
@@ -418,32 +474,37 @@ cost = prim(graph, 1, V)
 ```
 
 ## Kruskal vs Prim (https://8iggy.tistory.com/160)
+
 - 희소 그래프: 정점들 사이에 간선이 상대적으로 적게 존재하는 그래프. 예를 들어, 정점의 수에 비해 간선의 수가 훨씬 적은 경우.
 
 - 밀집 그래프: 정점들 사이에 많은 수의 간선이 존재하는 그래프. 거의 모든 정점 쌍 사이에 간선이 존재하는 경우.
 
 ### Kruskal
+
 -> 간선의 수가 적은 희소 그래프에 적합. 연결 요소 파악에 유용.
 
 장점:
+
 - 구현이 간단하고 메모리 사용이 효율적.
 - 간선의 수가 적을수록 더 효과적.
 
 단점:
+
 - 간선의 수가 많은 밀집 그래프에서는 비효율적.
 - 모든 간선을 정렬해야 하므로 초기에 시간이 소요됨.
 
-
 ### Prim
+
 -> 간선의 수가 많은 밀집 그래프에 적합. 작은 그래프에서 빠른 성능.
 
 장점:
+
 - 밀집 그래프에서 효율적.
 - 최소 힙을 사용하여 동적으로 간선 선택 가능.
 
 단점:
+
 - 메모리 사용량이 더 많음.
 - 정점의 수가 많을수록 성능 저하 가능성 있음.
-
 
 </details>
